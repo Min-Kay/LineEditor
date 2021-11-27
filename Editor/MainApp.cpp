@@ -39,6 +39,7 @@ void CMainApp::Render(void)
 
 void CMainApp::Release(void)
 {
+	CScrollMgr::Get_Instance()->Destroy_Intance(); 
 	CKeyMgr::Get_Instance()->Destroy_Intance();
 	CLineMgr::Get_Instance()->Destroy_Intance();
 }

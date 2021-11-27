@@ -147,6 +147,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Header\Define.h" />
+    <ClInclude Include="..\Header\Enum.h" />
+    <ClInclude Include="..\Header\Include.h" />
+    <ClInclude Include="..\Header\Struct.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="KeyMgr.h" />
     <ClInclude Include="Line.h" />

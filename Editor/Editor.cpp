@@ -86,15 +86,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				MainGame.Late_Update();
 				MainGame.Render();
 				BitBlt(m_hdc, 0, 0, m_rect.right - m_rect.left, m_rect.bottom - m_rect.top, m_hdcBuff, 0, 0, SRCCOPY);
+                SelectObject(m_hdcBuff, m_hbmpBuffOld);	// 기존 HBITMAP 선택 
+                DeleteObject(m_hbmpBuff); // 만든 HBITMAP 지움 
+                DeleteDC(m_hdcBuff); // Buffer 지움 
+               
 				dwOldTime = GetTickCount();
 			}
 		}
 	}
 
-	SelectObject(m_hdcBuff, m_hbmpBuffOld);	// 기존 HBITMAP 선택 
-	DeleteObject( m_hbmpBuff ); // 만든 HBITMAP 지움 
-	DeleteDC( m_hdcBuff ); // Buffer 지움 
-	ReleaseDC(g_hWnd, m_hdc );
+    ReleaseDC(g_hWnd, m_hdc);
 
     return (int) msg.wParam;
 }
@@ -160,6 +161,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
    return TRUE;
 }
