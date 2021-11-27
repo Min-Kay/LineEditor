@@ -40,8 +40,11 @@ private:
 	void	KeyInput();
 	void	Set_Pos();
 	void	Reset_Pos();
+	void	Drag();
+	void	Drop();
+	void	Drag_Erase();
 	void	Set_Target();
-	void    Undo_Target() ;
+	void    Erase_Target();
 	void	Undo(); 
 	void	Redo();
 	void	Save();
@@ -57,10 +60,17 @@ private:
 	LINEPOS				m_tLinePos[2]; // 이을 점을 관리하는 점 리스트
 	list<CLine*>		m_LineList; // 현재 사용중인 라인 리스트
 	list<CLine*>		m_ReDoList; // 되돌리기용 라인 리스트
+	list<CLine*>		m_DragList; // 드래그용 라인 리스트
 
 	CLine*				m_TargetLine;
 	INFO				m_MouseInfo;
 	RECT				m_MouseRect;
+	bool				m_MouseOn;
+
+	LINEPOS				m_DragInfo[2];
+	RECT				m_DragRect;
+	bool				isDraged;
+	bool				m_DragOn;
 
 	DWORD				m_DrawPressTime;
 	DWORD				m_UndoPressTime;

@@ -119,3 +119,8 @@ bool CKeyMgr::Key_Double_Click(int _Key) // 키 더블 클릭
 	return false;
 }
 
+bool CKeyMgr::Key_Down_Up(int _Key)
+{
+	return !Key_Down(_Key) && Key_Up(_Key);
+}
+

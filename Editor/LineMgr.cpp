@@ -7,6 +7,7 @@ CLineMgr* CLineMgr::m_pInstance = nullptr;
 CLineMgr::CLineMgr()
 {
 	ZeroMemory(m_tLinePos, sizeof(m_tLinePos));
+	ZeroMemory(m_DragInfo, sizeof(m_DragInfo));
 }
 
 
@@ -39,7 +40,10 @@ void CLineMgr::Render(HDC _DC)
 {
 
 #ifdef _DEBUG
-	Rectangle(_DC,m_MouseRect.left,m_MouseRect.top,m_MouseRect.right,m_MouseRect.bottom);
+	if(m_DragOn)
+		Rectangle(_DC, m_DragRect.left, m_DragRect.top, m_DragRect.right, m_DragRect.bottom);
+	if(m_MouseOn)
+		Rectangle(_DC,m_MouseRect.left,m_MouseRect.top,m_MouseRect.right,m_MouseRect.bottom);
 #endif
 
 	for (auto& iter : m_LineList)
@@ -57,7 +61,13 @@ void CLineMgr::Release()
 
 void CLineMgr::KeyInput()
 {
-	
+	Drag();
+
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASEDRAG))
+	{
+		Drag_Erase();
+	}
+
 	if (m_DrawPressTime + 50.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_DRAW))
 	{
 		Set_Pos();
@@ -68,20 +78,19 @@ void CLineMgr::KeyInput()
 		Set_Pos();
 	}
 
-	
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_RESETPOS)) 
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_SPACE))
 	{
 		Reset_Pos();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_SETTARGET))
+	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_SETTARGET))
 	{
 		Set_Target(); 
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_UNDOTARGET))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASETARGET))
 	{
-		Undo_Target();
+		Erase_Target();
 	}
 
 	if (CKeyMgr::Get_Instance()->Key_Down(VK_SAVE))
@@ -104,7 +113,6 @@ void CLineMgr::KeyInput()
 		Undo();
 	}
 
-
 	if (m_RedoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_REDO))
 	{
 		Redo();
@@ -114,9 +122,6 @@ void CLineMgr::KeyInput()
 	{
 		Redo();
 	}
-
-	
-
 }
 
 void CLineMgr::Set_Pos() // 선 긋기
@@ -155,6 +160,167 @@ void CLineMgr::Reset_Pos() // 선 새로 긋기
 	ZeroMemory(m_tLinePos, sizeof(m_tLinePos));
 }
 
+void CLineMgr::Drag()
+{
+	if (m_LineList.empty() || !m_DragInfo)
+		return;
+
+	POINT	pt{};
+
+	GetCursorPos(&pt);
+	ScreenToClient(g_hWnd, &pt);
+
+	//pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+
+	if (!isDraged && CKeyMgr::Get_Instance()->Key_Down(VK_DRAG))
+	{
+		m_DragInfo[0].fX = pt.x;
+		m_DragInfo[0].fY = pt.y;
+		isDraged = true;
+	}
+
+	if (CKeyMgr::Get_Instance()->Key_Up(VK_DRAG))
+	{
+		m_DragInfo[1].fX = pt.x;
+		m_DragInfo[1].fY = pt.y;
+		Drop();
+		isDraged = false;
+	}
+}
+
+void CLineMgr::Drop()
+{
+	if (m_LineList.empty())
+		return;
+
+	m_DragRect.left = m_DragInfo[0].fX < m_DragInfo[1].fX ? m_DragInfo[0].fX : m_DragInfo[1].fX;
+	m_DragRect.right = m_DragInfo[0].fX < m_DragInfo[1].fX ? m_DragInfo[1].fX : m_DragInfo[0].fX;
+	m_DragRect.top = m_DragInfo[0].fY < m_DragInfo[1].fY ? m_DragInfo[0].fY : m_DragInfo[1].fY;
+	m_DragRect.bottom = m_DragInfo[0].fY < m_DragInfo[1].fY ? m_DragInfo[1].fY : m_DragInfo[0].fY;
+
+	POINT	dragCenter;
+
+	dragCenter.x = (m_DragInfo[0].fX + m_DragInfo[1].fX) * 0.5f;
+	dragCenter.y = (m_DragInfo[0].fY + m_DragInfo[1].fY) * 0.5f;
+
+	list<CLine*>::iterator iter = m_DragList.begin();
+	for (; iter != m_DragList.end();)
+	{
+		iter = m_DragList.erase(iter);
+	}
+
+	for (auto& iter : m_LineList)
+	{
+		float x1, y1;
+		float x2, y2;
+
+		if (iter->Get_Info().tLeftPos.fX < iter->Get_Info().tRightPos.fX)
+		{
+			x1 = iter->Get_Info().tLeftPos.fX;
+			y1 = iter->Get_Info().tLeftPos.fY;
+
+			x2 = iter->Get_Info().tRightPos.fX;
+			y2 = iter->Get_Info().tRightPos.fY;
+		}
+		else
+		{
+			x2 = iter->Get_Info().tLeftPos.fX;
+			y2 = iter->Get_Info().tLeftPos.fY;
+
+			x1 = iter->Get_Info().tRightPos.fX;
+			y1 = iter->Get_Info().tRightPos.fY;
+		}
+		
+
+		if (x1 < dragCenter.x && x2 > dragCenter.x)
+		{
+			float result = ((y2 - y1) / (x2 - x1)) * (dragCenter.x - x1) + y1;
+
+			if (result > m_DragRect.top && result < m_DragRect.bottom)
+			{
+				m_DragList.push_back(iter);
+				continue; 
+			}
+		}
+
+		if (y1 < y2)
+		{
+			if (y1 < dragCenter.y && y2 > dragCenter.y)
+			{
+				float result = (dragCenter.y - y1) / ((y2 - y1) / (x2 - x1)) + x1;
+
+				if (result > m_DragRect.left&& result < m_DragRect.right)
+				{
+					m_DragList.push_back(iter);
+					continue;
+				}
+			}
+
+		}
+		else
+		{
+			if (y1 > dragCenter.y && y2 < dragCenter.y)
+			{
+				float result = (dragCenter.y - y1) / ((y2 - y1) / (x2 - x1)) + x1;
+
+				if (result > m_DragRect.left && result < m_DragRect.right)
+				{
+					m_DragList.push_back(iter);
+					continue;
+				}
+			}
+		}
+		
+		
+		if (x1 > m_DragRect.left&&
+			x1 < m_DragRect.right &&
+			x2 > m_DragRect.left&&
+			x2 < m_DragRect.right &&
+			y1 > m_DragRect.top&&
+			y1 < m_DragRect.bottom &&
+			y2 > m_DragRect.top&&
+			y2 < m_DragRect.bottom )
+		{
+			m_DragList.push_back(iter);
+			continue;
+		}
+	}
+	m_DragOn = true;
+}
+
+void CLineMgr::Drag_Erase()
+{
+	if (m_DragList.empty())
+		return;
+
+	list<CLine*>::iterator j = m_DragList.begin();
+
+	//bool isErased = false;
+	for (; j != m_DragList.end();)
+	{
+		//isErased = false;
+		list<CLine*>::iterator i = m_LineList.begin();
+
+		for (; i != m_LineList.end();)
+		{
+			if (*i == *j)
+			{
+				m_ReDoList.push_back(*i);
+				i = m_LineList.erase(i);
+				j = m_DragList.erase(j);
+				//isErased = true;
+				break;
+			}
+			else
+			{
+				++i;
+			}
+		}
+	}
+
+	m_DragOn = false;
+}
+
 void CLineMgr::Set_Target()
 {
 	POINT	pt{};
@@ -169,9 +335,10 @@ void CLineMgr::Set_Target()
 	Update_RectPoint();
 
 	Collision_Mouse();
+	m_MouseOn = true;
 }
 
-void CLineMgr::Undo_Target()
+void CLineMgr::Erase_Target()
 {
 	if (!m_TargetLine || m_LineList.empty())
 		return;
@@ -190,6 +357,7 @@ void CLineMgr::Undo_Target()
 			++iter;
 		}
 	}
+	m_MouseOn = false;
 }
 
 void CLineMgr::Undo() // 마지막 선 지우기

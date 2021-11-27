@@ -15,11 +15,13 @@
 
 
 #define		VK_DRAW		VK_LBUTTON
-#define		VK_RESETPOS	VK_RBUTTON
+#define		VK_DRAG		VK_RBUTTON
+#define		VK_RESETPOS VK_SPACE
+#define		VK_ERASEDRAG 'Q'
 #define		VK_UNDO		'Z'		 
 #define		VK_REDO		'X'
 #define		VK_SETTARGET	VK_SHIFT
-#define		VK_UNDOTARGET	'C'
+#define		VK_ERASETARGET	'C'
 #define		VK_SAVE		'S'
 #define		VK_LOAD		'A'
 

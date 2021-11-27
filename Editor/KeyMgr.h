@@ -17,6 +17,7 @@ public:
 	bool		Key_Up(int _Key);
 	bool		Key_Rollover(int _First, int _Second); // 동시 입력 검사
 	bool		Key_Double_Click(int _Key);
+	bool		Key_Down_Up(int _Key);
 
 public:
 	static	CKeyMgr*		Get_Instance(void)

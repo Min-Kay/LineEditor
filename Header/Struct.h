@@ -59,7 +59,6 @@ public:
 };
 
 
-
 template<typename T>
 void		Safe_Delete(T& Temp)
 {
