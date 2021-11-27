@@ -28,6 +28,9 @@
     <Filter Include="02. Manager\01. KeyMgr">
       <UniqueIdentifier>{16b2f0ab-8156-45cd-894b-3d482a0d79f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Manager\02.ScrollMgr">
+      <UniqueIdentifier>{11b2baf4-c3bd-4245-93ef-cc130e9f92f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -57,6 +60,9 @@
     <ClInclude Include="MainApp.h">
       <Filter>00. MainApp</Filter>
     </ClInclude>
+    <ClInclude Include="ScrollMgr.h">
+      <Filter>02. Manager\02.ScrollMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -76,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="MainApp.cpp">
       <Filter>00. MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollMgr.cpp">
+      <Filter>02. Manager\02.ScrollMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

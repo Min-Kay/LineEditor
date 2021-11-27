@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "LineMgr.h"
+#include "ScrollMgr.h"
 
 CLineMgr* CLineMgr::m_pInstance = nullptr;
 
@@ -19,6 +20,9 @@ void CLineMgr::Initialize(void)
 	m_TargetLine = nullptr;
 	m_MouseInfo.fCX = 20;
 	m_MouseInfo.fCY = 20;
+	m_DrawPressTime = 0.f;
+	m_UndoPressTime = 0.f;
+	m_RedoPressTime = 0.f;
 }
 
 void CLineMgr::Update(void)
@@ -54,45 +58,64 @@ void CLineMgr::Release()
 void CLineMgr::KeyInput()
 {
 	
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_LBUTTON))
+	if (m_DrawPressTime + 50.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_DRAW))
+	{
+		Set_Pos();
+		m_DrawPressTime = GetTickCount();
+	}
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_DRAW))
 	{
 		Set_Pos();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_RBUTTON)) 
+	
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_RESETPOS)) 
 	{
 		Reset_Pos();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_F3))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_SETTARGET))
 	{
 		Set_Target(); 
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_F4))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_UNDOTARGET))
 	{
 		Undo_Target();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Rollover(VK_F1, VK_F2)) 
-	{
-		Load();
-	}
-
-	if (CKeyMgr::Get_Instance()->Key_Double_Click(VK_F6)) 
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_SAVE))
 	{
 		Save();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_F1)) 
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_LOAD))
+	{
+		Load();
+	}
+
+	if (m_UndoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_UNDO))
+	{
+		Undo();
+		m_UndoPressTime = GetTickCount();
+	}
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_UNDO)) 
 	{
 		Undo();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_F2)) 
+
+	if (m_RedoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_REDO))
+	{
+		Redo();
+		m_RedoPressTime = GetTickCount();
+	}
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_REDO)) 
 	{
 		Redo();
 	}
+
+	
 
 }
 
@@ -102,6 +125,12 @@ void CLineMgr::Set_Pos() // 선 긋기
 
 	GetCursorPos(&pt);
 	ScreenToClient(g_hWnd, &pt);
+
+	pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+
+	if (m_tLinePos[0].fX == (float)pt.x && m_tLinePos[0].fY == (float)pt.y)
+		return; 
+
 
 	if (!m_tLinePos[0].fX && !m_tLinePos[0].fY)
 	{
@@ -119,7 +148,6 @@ void CLineMgr::Set_Pos() // 선 긋기
 		m_tLinePos[0].fY = m_tLinePos[1].fY;
 	}
 
-	
 }
 
 void CLineMgr::Reset_Pos() // 선 새로 긋기
@@ -133,6 +161,8 @@ void CLineMgr::Set_Target()
 
 	GetCursorPos(&pt);
 	ScreenToClient(g_hWnd, &pt);
+
+	pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
 
 	m_MouseInfo.fX = pt.x;
 	m_MouseInfo.fY = pt.y;
@@ -167,6 +197,12 @@ void CLineMgr::Undo() // 마지막 선 지우기
 	if (m_LineList.empty())
 		return;
 
+	if (m_ReDoList.size() >= 20)
+	{
+		Safe_Delete(m_ReDoList.front());
+		m_ReDoList.pop_front();
+	}
+
 	m_ReDoList.push_back(m_LineList.back());
 	m_LineList.pop_back();
 }
@@ -186,44 +222,52 @@ void CLineMgr::Save() // m_LineList 세이브
 	if (m_LineList.empty())
 		return;
 
-	FILE* saveFile = nullptr;
-	errno_t saveData = fopen_s(&saveFile, LINE_SAVE, "wb");
+	HANDLE			hFile = CreateFile(LINE_SAVE, GENERIC_WRITE,NULL,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL, NULL);					
 
-	if (0 == saveData)
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		auto& iter = m_LineList.begin();
-		for (; iter != m_LineList.end();)
-		{
-			fwrite(*iter, sizeof(CLine), 1, saveFile);
-			++iter;
-		}	
-		fclose(saveFile);
+		MessageBox(g_hWnd, _T("Save File"), _T("Fail"), MB_OK);
+		return;
 	}
+
+	DWORD		dwByte = 0;
+
+	for (auto& iter : m_LineList)
+	{
+		WriteFile(hFile, &(iter->Get_Info()), sizeof(LINEINFO), &dwByte, NULL);
+	}
+
+	CloseHandle(hFile);
+
+	MessageBox(g_hWnd, _T("Save 완료"), _T("Success"), MB_OKCANCEL);
 }
 
 void CLineMgr::Load() // m_LineList 로드
 {
-	FILE* saveFile = nullptr;
-	errno_t saveData = fopen_s(&saveFile, LINE_SAVE, "rb");
+	HANDLE			hFile = CreateFile(LINE_SAVE,GENERIC_READ,NULL,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);					
 
-	if (0 == saveData)
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		while(true)
-		{
-			CLine* temp = new CLine;
-			int iCnt = fread(&(*temp), sizeof(CLine), 1, saveFile);
-
-			if (1 > iCnt)
-			{
-				Safe_Delete(temp);
-				break;
-			}
-
-			m_LineList.push_back(&(*temp));
-		}
-
-		fclose(saveFile);
+		MessageBox(g_hWnd, _T("Load File"), _T("Fail"), MB_OK);
+		return;
 	}
+
+	DWORD		dwByte = 0;
+	LINEINFO	tInfo{};
+
+	while (true)
+	{
+		ReadFile(hFile, &tInfo, sizeof(LINEINFO), &dwByte, NULL);
+
+		if (0 == dwByte)
+			break;
+
+		m_LineList.push_back(new CLine(tInfo));
+	}
+
+	CloseHandle(hFile);
+
+	MessageBox(g_hWnd, _T("Load 성공"), _T("Success"), MB_OKCANCEL);
 
 }
 
@@ -235,17 +279,17 @@ bool CLineMgr::Collision_Mouse()
 
 	for (auto& iter : m_LineList)
 	{
-		//x축 좌표 기준 충돌
-		if (iter->Get_Info().tLeftPos.fX <= iter->Get_Info().tRightPos.fX)
-		{
-			if (iter->Get_Info().tLeftPos.fX < m_MouseInfo.fX &&
-				iter->Get_Info().tRightPos.fX > m_MouseInfo.fX)
-			{
-				float x1 = iter->Get_Info().tLeftPos.fX;
-				float y1 = iter->Get_Info().tLeftPos.fY;
+		float x1 = iter->Get_Info().tLeftPos.fX;
+		float y1 = iter->Get_Info().tLeftPos.fY;
 
-				float x2 = iter->Get_Info().tRightPos.fX;
-				float y2 = iter->Get_Info().tRightPos.fY;
+		float x2 = iter->Get_Info().tRightPos.fX;
+		float y2 = iter->Get_Info().tRightPos.fY;
+
+		//x축 좌표 기준 충돌
+		if (x1 <= x2)
+		{
+			if (x1 < m_MouseInfo.fX && x2 > m_MouseInfo.fX)
+			{
 
 				float result = ((y2 - y1) / (x2 - x1)) * (m_MouseInfo.fX - x1) + y1;
 
@@ -253,23 +297,14 @@ bool CLineMgr::Collision_Mouse()
 				{
 					m_TargetLine = iter;
 					return true;
-				}
-				else
-				{
-					m_TargetLine = nullptr;
 				}
 			}
 		}
-		else if (iter->Get_Info().tLeftPos.fX > iter->Get_Info().tRightPos.fX)
+		
+		if (x1 > x2)
 		{
-			if (iter->Get_Info().tLeftPos.fX > m_MouseInfo.fX &&
-				iter->Get_Info().tRightPos.fX < m_MouseInfo.fX)
+			if (x1 > m_MouseInfo.fX && x2 < m_MouseInfo.fX)
 			{
-				float x1 = iter->Get_Info().tRightPos.fX;
-				float y1 = iter->Get_Info().tRightPos.fY;
-
-				float x2 = iter->Get_Info().tLeftPos.fX;
-				float y2 = iter->Get_Info().tLeftPos.fY;
 
 				float result = ((y2 - y1) / (x2 - x1)) * (m_MouseInfo.fX - x1) + y1;
 
@@ -277,26 +312,15 @@ bool CLineMgr::Collision_Mouse()
 				{
 					m_TargetLine = iter;
 					return true;
-				}
-				else
-				{
-					m_TargetLine = nullptr;
 				}
 			}
 		}
 		
 		// y축 좌표 기준 충돌 
-		if (iter->Get_Info().tLeftPos.fY <= iter->Get_Info().tRightPos.fY)
+		if (y1 <= y2)
 		{
-			if (iter->Get_Info().tLeftPos.fY < m_MouseInfo.fY &&
-				iter->Get_Info().tRightPos.fY > m_MouseInfo.fY)
+			if (y1 < m_MouseInfo.fY &&y2 > m_MouseInfo.fY)
 			{
-				float x1 = iter->Get_Info().tLeftPos.fX;
-				float y1 = iter->Get_Info().tLeftPos.fY;
-
-				float x2 = iter->Get_Info().tRightPos.fX;
-				float y2 = iter->Get_Info().tRightPos.fY;
-
 				float result = (m_MouseInfo.fY - y1) / ((y2 - y1) / (x2 - x1)) + x1; 
 
 				if (result > m_MouseRect.left && result < m_MouseRect.right)
@@ -304,33 +328,19 @@ bool CLineMgr::Collision_Mouse()
 					m_TargetLine = iter;
 					return true;
 				}
-				else
-				{
-					m_TargetLine = nullptr;
-				}
 			}
 		}
-		else if (iter->Get_Info().tLeftPos.fY > iter->Get_Info().tRightPos.fY)
+		
+		if (y1 > y2)
 		{
-			if (iter->Get_Info().tLeftPos.fY > m_MouseInfo.fY &&
-				iter->Get_Info().tRightPos.fY < m_MouseInfo.fY)
+			if (y1 > m_MouseInfo.fY && y2 < m_MouseInfo.fY)
 			{
-				float x1 = iter->Get_Info().tRightPos.fX;
-				float y1 = iter->Get_Info().tRightPos.fY;
-
-				float x2 = iter->Get_Info().tLeftPos.fX;
-				float y2 = iter->Get_Info().tLeftPos.fY;
-
 				float result = (m_MouseInfo.fY - y1) / ((y2 - y1) / (x2 - x1)) + x1;
 
 				if (result > m_MouseRect.left && result < m_MouseRect.right)
 				{
 					m_TargetLine = iter;
 					return true;
-				}
-				else
-				{
-					m_TargetLine = nullptr;
 				}
 			}
 		}
@@ -341,8 +351,9 @@ bool CLineMgr::Collision_Mouse()
 
 void CLineMgr::Update_RectPoint() // 마우스 RECT 출력용
 {
-	m_MouseRect.left = long(m_MouseInfo.fX - m_MouseInfo.fCX * 0.5f);
-	m_MouseRect.right = long(m_MouseInfo.fX + m_MouseInfo.fCX * 0.5f);
+	float px = (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+	m_MouseRect.left = long(m_MouseInfo.fX - m_MouseInfo.fCX * 0.5f) + px;
+	m_MouseRect.right = long(m_MouseInfo.fX + m_MouseInfo.fCX * 0.5f) + px;
 	m_MouseRect.top = long(m_MouseInfo.fY - m_MouseInfo.fCY * 0.5f);
 	m_MouseRect.bottom = long(m_MouseInfo.fY + m_MouseInfo.fCY * 0.5f);
 }

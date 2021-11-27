@@ -61,5 +61,11 @@ private:
 	CLine*				m_TargetLine;
 	INFO				m_MouseInfo;
 	RECT				m_MouseRect;
+
+	DWORD				m_DrawPressTime;
+	DWORD				m_UndoPressTime;
+	DWORD				m_RedoPressTime;
+
+
 };
 

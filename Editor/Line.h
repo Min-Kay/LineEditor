@@ -6,6 +6,7 @@ class CLine
 {
 public:
 	CLine();
+	CLine(LINEINFO& _info);
 	CLine(LINEPOS& _tLeft, LINEPOS& _tRight);
 	~CLine();
 

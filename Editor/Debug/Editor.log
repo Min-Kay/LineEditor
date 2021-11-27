@@ -1,4 +1,12 @@
 ﻿  LineMgr.cpp
-C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(137,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(138,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Editor.vcxproj -> C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Debug\Editor.exe
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Header\Define.h(27,1): warning C4005: 'VK_SCROLL': 매크로 재정의
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winuser.h(607): message : 'VK_SCROLL'의 이전 정의를 참조하십시오.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(23,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(24,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(25,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(167,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(168,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(354,11): warning C4244: '초기화 중': 'long'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(355,67): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Editor\LineMgr.cpp(356,68): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Editor.vcxproj -> C:\Users\민경욱\Desktop\LineEditor 1.1\LineEditor\Debug\Editor.exe

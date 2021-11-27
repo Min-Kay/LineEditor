@@ -12,6 +12,8 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND	g_hWnd;
+HDC     g_hdc;
+float   g_Wheel = 0.f;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -43,6 +45,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EDITOR));
 
     MSG msg;
+	HDC m_hdc = nullptr;	// main DC 
+	HDC m_hdcBuff = nullptr;	// Buffer DC 
+	HBITMAP m_hbmpBuff = nullptr;	// Buffer DC HBITMAP 
+	HBITMAP m_hbmpBuffOld = nullptr;	// 기존 Buffer DC HBITMAP 
+	RECT m_rect;
+
 	msg.message = WM_NULL;
 
 	CMainApp		MainGame;
@@ -66,17 +74,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
-
 			if (dwOldTime + 10 < GetTickCount())
 			{
+				GetWindowRect(g_hWnd,&m_rect);	
+				m_hdc = ::GetDC(g_hWnd); // 보여지는 DC 
+				m_hdcBuff = ::CreateCompatibleDC( m_hdc ); // 더블 버퍼링에 사용될 DC 만들기 
+				m_hbmpBuff = ::CreateCompatibleBitmap( m_hdc, m_rect.right - m_rect.left, m_rect.bottom - m_rect.top ); // m_hdcBuff의 HBITMAP 만들기 
+				m_hbmpBuffOld = (HBITMAP)::SelectObject( m_hdcBuff, m_hbmpBuff );
+                g_hdc = m_hdcBuff;
 				MainGame.Update();
 				MainGame.Late_Update();
 				MainGame.Render();
-
+				BitBlt(m_hdc, 0, 0, m_rect.right - m_rect.left, m_rect.bottom - m_rect.top, m_hdcBuff, 0, 0, SRCCOPY);
 				dwOldTime = GetTickCount();
 			}
 		}
 	}
+
+	SelectObject(m_hdcBuff, m_hbmpBuffOld);	// 기존 HBITMAP 선택 
+	DeleteObject( m_hbmpBuff ); // 만든 HBITMAP 지움 
+	DeleteDC( m_hdcBuff ); // Buffer 지움 
+	ReleaseDC(g_hWnd, m_hdc );
 
     return (int) msg.wParam;
 }
@@ -193,11 +211,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
-
+    case WM_MOUSEWHEEL: // 마우스 휠을 이용한 스크롤
+    {
+        int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+        if (zDelta > 0)
+            g_Wheel = -(WHEEL_DELTA >> 2);
+        else if (zDelta < 0)
+            g_Wheel = (WHEEL_DELTA >> 2);
+    }
+        
+        break;
 	case WM_DESTROY:
 		//KillTimer(hWnd, 0); // settimer로 발생한 타이머를 삭제하는 용도
 		PostQuitMessage(0);
 		break;
+
+    
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
