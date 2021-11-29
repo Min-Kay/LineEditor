@@ -34,6 +34,15 @@
     <Filter Include="헤더 파일\99. Header">
       <UniqueIdentifier>{2fd7c784-5ad7-43ce-b601-da3808a216cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Obstacle">
+      <UniqueIdentifier>{2803cd9b-cc41-43b6-8809-310ab7b0ee63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. BlockInfo">
+      <UniqueIdentifier>{7f9bad93-0b73-447f-a077-7d9e226bd2ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\03.BlockMgr">
+      <UniqueIdentifier>{9891f91b-6171-4f50-bca8-0e8ac3d92601}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -78,6 +87,12 @@
     <ClInclude Include="..\Header\Include.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>04. BlockInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockMgr.h">
+      <Filter>02. Manager\03.BlockMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -100,6 +115,12 @@
     </ClCompile>
     <ClCompile Include="ScrollMgr.cpp">
       <Filter>02. Manager\02.ScrollMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>04. BlockInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockMgr.cpp">
+      <Filter>02. Manager\03.BlockMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

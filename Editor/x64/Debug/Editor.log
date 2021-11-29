@@ -1,0 +1,24 @@
+﻿  LineMgr.cpp
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(25,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(26,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(27,20): warning C4244: '=': 'float'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(173,24): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(174,24): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(175,48): warning C4244: '인수': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(175,43): warning C4244: '인수': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(181,24): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(182,24): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(183,50): warning C4244: '인수': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(183,44): warning C4244: '인수': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(195,37): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(196,38): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(197,36): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(198,39): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(202,55): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(203,55): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(332,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(333,21): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(521,11): warning C4244: '초기화 중': 'long'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(522,67): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\Editor\LineMgr.cpp(523,68): warning C4244: '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Editor.vcxproj -> C:\Users\admin\Desktop\수업\쥬신\TeamProject\second\LineEditor\x64\Debug\Editor.exe
