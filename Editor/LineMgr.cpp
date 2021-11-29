@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LineMgr.h"
 #include "ScrollMgr.h"
+#include "BlockMgr.h"
 
 CLineMgr* CLineMgr::m_pInstance = nullptr;
 
@@ -62,18 +63,18 @@ void CLineMgr::Release()
 void CLineMgr::KeyInput()
 {
 	Drag();
-
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASEDRAG))
+	
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASEDRAG_LINE))
 	{
 		Drag_Erase();
 	}
 
-	if (m_DrawPressTime + 50.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_DRAW))
+	if (m_DrawPressTime + 50.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_DRAW_LINE))
 	{
 		Set_Pos();
 		m_DrawPressTime = GetTickCount();
 	}
-	else if (CKeyMgr::Get_Instance()->Key_Down(VK_DRAW))
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_DRAW_LINE))
 	{
 		Set_Pos();
 	}
@@ -83,42 +84,42 @@ void CLineMgr::KeyInput()
 		Reset_Pos();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_SETTARGET))
+	if (CKeyMgr::Get_Instance()->Key_Pressing(VK_SETTARGET_LINE))
 	{
 		Set_Target(); 
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASETARGET))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_ERASETARGET_LINE))
 	{
 		Erase_Target();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_SAVE))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_SAVE_LINE))
 	{
 		Save();
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Down(VK_LOAD))
+	if (CKeyMgr::Get_Instance()->Key_Down(VK_LOAD_LINE))
 	{
 		Load();
 	}
 
-	if (m_UndoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_UNDO))
+	if (m_UndoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_UNDO_LINE))
 	{
 		Undo();
 		m_UndoPressTime = GetTickCount();
 	}
-	else if (CKeyMgr::Get_Instance()->Key_Down(VK_UNDO)) 
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_UNDO_LINE)) 
 	{
 		Undo();
 	}
 
-	if (m_RedoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_REDO))
+	if (m_RedoPressTime + 300.f < GetTickCount() && CKeyMgr::Get_Instance()->Key_Pressing(VK_REDO_LINE))
 	{
 		Redo();
 		m_RedoPressTime = GetTickCount();
 	}
-	else if (CKeyMgr::Get_Instance()->Key_Down(VK_REDO)) 
+	else if (CKeyMgr::Get_Instance()->Key_Down(VK_REDO_LINE)) 
 	{
 		Redo();
 	}
@@ -162,28 +163,26 @@ void CLineMgr::Reset_Pos() // ¼± »õ·Î ±ß±â
 
 void CLineMgr::Drag()
 {
-	if (m_LineList.empty() || !m_DragInfo)
-		return;
-
 	POINT	pt{};
 
 	GetCursorPos(&pt);
 	ScreenToClient(g_hWnd, &pt);
 
-	//pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
-
-	if (!isDraged && CKeyMgr::Get_Instance()->Key_Down(VK_DRAG))
+	if (!isDraged && CKeyMgr::Get_Instance()->Key_Down(VK_RBUTTON))
 	{
 		m_DragInfo[0].fX = pt.x;
 		m_DragInfo[0].fY = pt.y;
+		CBlockMgr::Get_Instance()->Set_Drag(0,pt.x,pt.y);
 		isDraged = true;
 	}
 
-	if (CKeyMgr::Get_Instance()->Key_Up(VK_DRAG))
+	if (CKeyMgr::Get_Instance()->Key_Up(VK_RBUTTON))
 	{
 		m_DragInfo[1].fX = pt.x;
 		m_DragInfo[1].fY = pt.y;
+		CBlockMgr::Get_Instance()->Set_Drag(1, pt.x, pt.y);
 		Drop();
+		CBlockMgr::Get_Instance()->Drop();
 		isDraged = false;
 	}
 }
