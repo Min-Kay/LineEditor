@@ -1,4 +1,5 @@
 #pragma once
+#include "Enum.h"
 
 typedef struct tagInfo
 {
@@ -38,7 +39,17 @@ typedef struct tagLineInfo
 	{	}
 }LINEINFO;
 
+typedef struct tagBlockInfo
+{
+	POINT	pos;
+	BLOCK::ID id;
 
+	tagBlockInfo() { ZeroMemory(this, sizeof(tagBlockInfo)); }
+	tagBlockInfo(POINT& _pos, BLOCK::ID& _id)
+		: pos(_pos), id(_id)
+	{	}
+
+}BLOCKINFO;
 
 class CDeleteObj
 {
@@ -57,7 +68,6 @@ public:
 		}
 	}
 };
-
 
 template<typename T>
 void		Safe_Delete(T& Temp)
