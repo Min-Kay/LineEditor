@@ -50,6 +50,19 @@ void CLineMgr::Render(HDC _DC)
 	for (auto& iter : m_LineList)
 		iter->Render(_DC);
 
+	POINT	pt{};
+
+	GetCursorPos(&pt);
+	ScreenToClient(g_hWnd, &pt);
+
+	pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+
+	swprintf_s(x, _T("%.1f"),(float)pt.x);
+	TextOut(_DC, pt.x + 20.f + CScrollMgr::Get_Instance()->Get_ScrollX(), pt.y, x, lstrlen(x));
+	
+	swprintf_s(y, _T("%.1f"), (float)pt.y);
+	TextOut(_DC, pt.x + 20.f + CScrollMgr::Get_Instance()->Get_ScrollX(), pt.y + 20.f, y, lstrlen(y));
+	
 }
 
 void CLineMgr::Release()
@@ -133,6 +146,7 @@ void CLineMgr::Set_Pos() // ¼± ±ß±â
 	ScreenToClient(g_hWnd, &pt);
 
 	pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+
 
 	if (m_tLinePos[0].fX == (float)pt.x && m_tLinePos[0].fY == (float)pt.y)
 		return; 

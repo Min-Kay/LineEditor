@@ -229,6 +229,8 @@ void CBlockMgr::Set_Target()
 	GetCursorPos(&pt);
 	ScreenToClient(g_hWnd, &pt);
 
+	pt.x -= (long)CScrollMgr::Get_Instance()->Get_ScrollX();
+
 	for (auto& i : block_list)
 	{
 		if (PtInRect(&i->Get_Rect(), pt))

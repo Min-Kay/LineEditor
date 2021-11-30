@@ -75,23 +75,23 @@
     <ClInclude Include="ScrollMgr.h">
       <Filter>02. Manager\02.ScrollMgr</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\Define.h">
-      <Filter>헤더 파일\99. Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Enum.h">
-      <Filter>헤더 파일\99. Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Struct.h">
-      <Filter>헤더 파일\99. Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Header\Include.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Block.h">
       <Filter>04. BlockInfo</Filter>
     </ClInclude>
     <ClInclude Include="BlockMgr.h">
       <Filter>02. Manager\03.BlockMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Enum.h">
+      <Filter>헤더 파일\99. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Include.h">
+      <Filter>헤더 파일\99. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>헤더 파일\99. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>헤더 파일\99. Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

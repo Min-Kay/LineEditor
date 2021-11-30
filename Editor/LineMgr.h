@@ -76,6 +76,7 @@ private:
 	DWORD				m_UndoPressTime;
 	DWORD				m_RedoPressTime;
 
-
+	TCHAR x[100000] = L"";
+	TCHAR y[100000] = L"";
 };
 
